@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <ul class="main-menu">
+        <li><a href="registration">Регистрация</a></li>
+        <li><a href="login">Логин</a></li>
+        <li><a href="logout">Выход</a></li>
+    </ul>
+
+    {% block content %} {% endblock %}
+</body>
+</html>
