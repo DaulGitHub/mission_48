@@ -56,7 +56,7 @@ ROOT_URLCONF = 'spartaBlog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['spartaBlog/spartaBlog/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'Asia/Novosibirsk'
 
@@ -122,3 +122,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = 'my_django_mail@mail.ru'
+EMAIL_HOST_PASSWORD = '1234qwer'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'my_django_mail@mail.ru'
+SERVER_EMAIL = 'my_django_mail@mail.ru'
+

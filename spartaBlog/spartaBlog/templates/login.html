@@ -1,4 +1,4 @@
-{% extends "blog/base.html" %}
+{% extends "base.html" %}
 {% block title %}
     Логин
 {% endblock %}
@@ -9,4 +9,7 @@
         {% csrf_token %}
         {{ form.as_p }}
     </form>
+
+    <a href="/registration">Зарегистрироваться</a>
+    <a href="/password_reset"> Забыли пароль? </a>
 {% endblock %}
