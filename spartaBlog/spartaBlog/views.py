@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.views.generic.base import View
 from forms import UserCreateForm
-from django.contrib.auth.views import password_reset
+from django.contrib.auth.views import password_reset, password_reset_confirm, password_reset_done
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 
@@ -50,9 +50,8 @@ class LogoutView(View):
 
 def reset_user_password(request):
 
-    return password_reset(request=request, #template_name='password_reset_form.html',
-                          post_reset_redirect=reverse('success')
-                          )
+    return password_reset(request=request, template_name='password_reset_form.html',
+                          post_reset_redirect=reverse('success'))
 
 
 def success(request):
@@ -63,3 +62,13 @@ def success(request):
 def index(request):
 
     return render(request, template_name='index.html')
+
+
+def password_confirm(request, uidb64=None, token=None):
+
+    return password_reset_confirm(request, template_name='password_reset_confirm.html', token=token, uidb64=uidb64)
+
+
+def reset_password_done(request):
+
+    return password_reset_done(request, template_name="password_reset_done.html")
