@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blogApp'
+    'blogApp',
+    'users'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -56,7 +57,8 @@ ROOT_URLCONF = 'spartaBlog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['spartaBlog/spartaBlog/templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'users/templates'),
+                 os.path.join(BASE_DIR, 'blogApp/templates/blog')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

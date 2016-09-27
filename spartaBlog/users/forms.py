@@ -17,3 +17,8 @@ class UserCreateForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ImageUploadForm(forms.Form):
+    """Image upload form."""
+    image = forms.ImageField()
