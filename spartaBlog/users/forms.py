@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from models import UserProfile
 
 
 class UserCreateForm(UserCreationForm):
@@ -19,6 +20,9 @@ class UserCreateForm(UserCreationForm):
         return user
 
 
-class ImageUploadForm(forms.Form):
-    """Image upload form."""
-    image = forms.ImageField()
+class ProfileAvatarForm(forms.ModelForm):
+    """Форма загрузки аватарки польлзователя."""
+
+    class Meta:
+        model = UserProfile
+        fields = ('avatar',)

@@ -1,12 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_register_user.html" %}
 {% block title %}
     Профиль пользователя
 {% endblock %}
 
 {%block navigation_menu%}
-    <li><a href="/logout">Выход</a></li>
-    <li><a href="/profile">Мой профиль</a></li>
-
 {% endblock %}
 
 {% block content %}
@@ -17,4 +14,10 @@
         {{ avatar_forms }}
         <button type="submit" class="btn">Добавить</button>
     </form>
+    
+    <p>Логин:</p>
+    {{user_name}}
+    <p>Аватар:</p>
+    <img width="50" height="50" src="{{avatar}}">
+
 {% endblock %}

@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -9,8 +10,9 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
-
-from .forms import UserCreateForm, ImageUploadForm
+from .forms import UserCreateForm, ProfileAvatarForm
+from models import UserProfile
+from spartaBlog import settings
 
 
 class RegisterFormView(FormView):
@@ -81,10 +83,37 @@ def reset_password_done(request):
 
 
 class Profile(View):
+    """Страница просмотра профиля пользователя"""
 
     @method_decorator(login_required)
     def get(self, request):
-        load_avatar_form = ImageUploadForm()
+        avatar = ""
+        if UserProfile.objects.filter(user_id=request.user.id):
+            profile = UserProfile.objects.get(user_id=request.user.id)
+            avatar = settings.MEDIA_URL + 'avatar/' + os.path.basename(profile.avatar.path)
+
+        user_name = request.user.username
+
+        load_avatar_form = ProfileAvatarForm()
+        context = {"avatar_forms": load_avatar_form, "avatar": avatar, "user_name": user_name}
+
+        return render(request, template_name='profile.html', context=context)
+
+    def post(self, request):
+        """Обрабатываем добавление аватарки"""
+        load_avatar_form = ProfileAvatarForm(request.POST, request.FILES)
+        if load_avatar_form.is_valid():
+            if UserProfile.objects.filter(user_id=request.user.id):
+                # удаляем старую запись
+                profile = UserProfile.objects.get(user_id=request.user.id)
+                os.remove(profile.avatar.path)
+                profile.delete()
+
+            # добавляем новую аватарку
+            user_avatar = load_avatar_form.save(commit=False)
+            user_avatar.user = request.user
+            user_avatar.save()
+
         context = {"avatar_forms": load_avatar_form}
 
         return render(request, template_name='profile.html', context=context)
