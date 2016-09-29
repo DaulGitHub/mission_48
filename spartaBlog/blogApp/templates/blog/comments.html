@@ -6,14 +6,19 @@
 {% block content %}
     <h1>Страница коментариев.</h1>
 
-    {% for comment in comments %}
-        <p><b>login:</b> {{ comment.user_name }} </p>
-        <p><b>email:</b> {{ comment.email }} </p>
-        <p>{{ comment.message }} </p>
-    {% endfor %}
     <form  action="" method="post">
         {% csrf_token %}
         {{form}}
         <button type="submit">Отправить</button>
     </form>
+
+    {% for comment in comments %}
+        <p><b>login:</b> {{ comment.user_name }} </p>
+        <p><b>email:</b> {{ comment.email }} </p>
+        <p>{{ comment.message }} </p>
+    {% endfor %}
+
+    <a href="?page={{previous_page}}">previous</a>
+    <a href="?page={{next_page}}">next</a>
+
 {% endblock %}
