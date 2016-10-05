@@ -1,0 +1,22 @@
+{% extends "blog/base.html" %}
+{% block title %}
+    Стена
+{% endblock %}
+
+{% block content %}
+    <h1>Стена пользователя {{wall_owner}}</h1>
+    {% for user in all_users %}
+        <a href="{{user}}"> {{user}} </a> <br>
+    {%endfor%}
+
+    <form  action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form}}
+        <button type="submit">Отправить</button>
+    </form>
+
+    {% for post in posts %}
+        <img src="/media/{{ post.photo }}"> <br>
+        <p> {{ post.comment }} </p>
+    {% endfor %}
+{% endblock %}

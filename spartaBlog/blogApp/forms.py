@@ -1,6 +1,7 @@
 # coding: utf8
 from django import forms
-from models import Comment
+from models import Comment, Post
+
 
 class ImageUploadForm(forms.Form):
     """Image upload form."""
@@ -13,3 +14,13 @@ class AddCommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('message',)
+
+
+class AddPostForm(forms.ModelForm):
+    """Форма добавления поста."""
+
+    class Meta:
+        model = Post
+        fields = ('photo', 'message')
+
+
