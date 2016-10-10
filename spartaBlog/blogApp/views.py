@@ -1,10 +1,13 @@
 # coding: utf-8
+import json
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from forms import AddCommentForm, AddPostForm
-from models import Comment, Post
+from forms import AddCommentForm, AddPostForm, AddPrivateMessageForm
+from models import Comment, Post, PrivateMessage
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import HttpResponse
 
 
 @login_required
@@ -69,3 +72,40 @@ def wall(request, wall_owner=None):
     context = {"wall_owner": wall_owner, "all_users": users, "form": form, "posts": prepared_posts}
 
     return render(request, template_name='blog/wall.html', context=context)
+
+
+@login_required
+def chat(request, companion=None):
+    """Страница личных сообщений."""
+    registered_user_name = request.user.username
+
+    form = AddPrivateMessageForm()
+    if request.method == "POST":
+        form = AddPrivateMessageForm(request.POST)
+        if form.is_valid():
+            # сохраняем сообщение, отправителя и получателя
+            message = form.save(commit=False)
+            message.user_from_id = request.user.id
+            message.user_to_id = User.objects.get(username=companion).id
+            message.save()
+    if request.is_ajax():
+        messages_info = PrivateMessage.objects.filter(Q(user_from_id=request.user.id) &
+                                                   Q(user_to_id=User.objects.get(username=companion).id) |
+                                                   Q(user_from_id=User.objects.get(username=companion).id) &
+                                                   Q(user_to_id=request.user.id)).all()
+        content_prepared = list()
+        for message_info in messages_info:
+            content_prepared.append({"id": message_info.id,
+                                     "name": User.objects.get(id=message_info.user_from_id).username, "content": message_info.message})
+
+        ajax_content = {"messages": content_prepared}
+        return HttpResponse(json.dumps(ajax_content), content_type="application/json")
+
+
+    # извлекаем имена всех зарегистрированных пользователей
+    users = list(User.objects.values_list('username', flat=True))
+    users.remove("admin")
+    users.remove(registered_user_name)
+    context = {"companion": companion, "registered_user_name": registered_user_name, "all_users": users, "form": form}
+
+    return render(request, template_name='blog/chat.html', context=context)

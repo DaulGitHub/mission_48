@@ -28,3 +28,10 @@ class Post(models.Model):
     message = models.TextField()
     wall_owner = models.CharField(max_length=30)
     photo = models.ImageField(upload_to=post_upload_to)
+
+
+class PrivateMessage(models.Model):
+    """Таблица личных сообщений"""
+    message = models.TextField()
+    user_from_id = models.IntegerField()
+    user_to_id = models.IntegerField()

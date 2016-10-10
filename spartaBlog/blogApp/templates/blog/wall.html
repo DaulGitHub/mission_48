@@ -16,7 +16,7 @@
     </form>
 
     {% for post in posts %}
-        <img src="/media/{{ post.photo }}"> <br>
+        <img width="250" height="250" src="/media/{{ post.photo }}"> <br>
         <p> {{ post.comment }} </p>
     {% endfor %}
 {% endblock %}

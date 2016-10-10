@@ -1,0 +1,74 @@
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% block css_style %}
+   <link rel="stylesheet" href='{% static "css/messages.css" %}'>
+{% endblock %}
+
+{% block js_links %}
+    <script type="text/javascript" src='{% static "js/jquery-3.1.0.js" %}'> </script>
+{% endblock %}
+
+{% block title %}
+    Личные сообщения
+{% endblock %}
+
+{% block content %}
+    <script>
+        $(document).ready(function(){
+            var poll_for_new_messages = function(){
+                $.ajax({url: '?get_messages=chat', dataType: 'json', ifModified: true, timeout: 2000, success: function(chat_messages, status){
+                    var messages = chat_messages.messages;
+                    if (!messages)
+                        return;
+
+                    $('ul#messages > li.pending').remove();
+
+                    var last_message_id = $('ul#messages').data('last_message_id');
+                    if (last_message_id == null)
+                        last_message_id = -1;
+
+                    for(var i = 0; i < messages.length; i++) {
+                        var msg = messages[i];
+                        if (msg.id > last_message_id) {
+                            $('<li/>').text(msg.content).
+                                prepend( $('<small />').text(msg.name) ).
+                                appendTo('ul#messages');
+                            $('ul#messages').data('last_message_id', msg.id);
+                        }
+                    }
+
+                    $('ul#messages > li').slice(0, -50).remove();
+                    $('ul#messages').scrollTop( $('ul#messages').get(0).scrollHeight );
+                }});
+            };
+
+            // Kick of the poll function and repeat it every two seconds
+            poll_for_new_messages();
+            setInterval(poll_for_new_messages, 2000);
+        });
+    </script>
+    <h1>
+        Добро пожаловать {{registered_user_name}}
+    </h1>
+    <h1>
+        Переписка с {{companion}}
+    </h1>
+    {% for user in all_users %}
+        <a href="{{user}}"> {{user}} </a> <br>
+    {%endfor%}
+
+    <ul id="messages">
+        <li>loading…</li>
+    </ul>
+
+    <form  action="" method="post">
+        {% csrf_token %}
+        {{form}}
+        <button type="submit">Отправить</button>
+    </form>
+
+    <!--{% for post in posts %}-->
+        <!--<img width="250" height="250" src="/media/{{ post.photo }}"> <br>-->
+        <!--<p> {{ post.comment }} </p>-->
+    <!--{% endfor %}-->
+{% endblock %}
