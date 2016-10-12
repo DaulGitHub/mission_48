@@ -109,3 +109,29 @@ def chat(request, companion=None):
     context = {"companion": companion, "registered_user_name": registered_user_name, "all_users": users, "form": form}
 
     return render(request, template_name='blog/chat.html', context=context)
+
+
+@login_required
+def instagram_photos(request):
+    """Страница вывода картинок с инстанграма по хештегу"""
+    from instagram.client import InstagramAPI
+
+    api = InstagramAPI(client_secret="f919fdac240e4962bafe9a92f0c5e83e",
+                       access_token="4034286171.002b2a0.f76cc1391c2a47cb963870398e33e9ef")
+
+    # api.tag('dog')
+    # api.tag_recent_media(tag_name='dog')
+    # api.tag_search(q='dog', count=4)
+
+    result = api.tag_recent_media(tag_name='castle')
+    media = result[0]
+
+    for m in media:
+        print (m.images)
+        print (m.user)
+        print (m.tags)
+
+    context = {}
+    return render(request, template_name='blog/instagram_photos.html', context=context)
+
+

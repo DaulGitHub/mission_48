@@ -1,0 +1,47 @@
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% block js_links %}
+    <script type="text/javascript" src='{% static "js/jquery-3.1.0.js" %}'> </script>
+{% endblock %}
+
+{% block title %}
+    Фотографии с Instagram
+{% endblock %}
+
+{% block content %}
+    <script>
+        var token = '4034286171.002b2a0.f76cc1391c2a47cb963870398e33e9ef',
+        num_photos = 4;
+
+        $(document).ready(function(){
+            $("#get_photos").click(function() {
+                $("#rudr_instafeed").empty();
+
+                $.ajax({
+                    url: 'https://api.instagram.com/v1/tags/' + document.getElementById('hashtag_val').value + '/media/recent',
+                    dataType: 'jsonp',
+                    type: 'GET',
+                    data: {
+                        'access_token': token,
+                        'count': num_photos
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        for (x in data.data) {
+                            $('#rudr_instafeed').append('<li><img class="photos" src="' + data.data[x].images.standard_resolution.url + '"></li>');
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <h1>Страница фотографий с Instagram.</h1>
+    <p>Введите хештег без #:</p> <br>
+    <input type="text" size="40" id="hashtag_val">
+    <input type="button" value="Отправить" id="get_photos">
+    <ul id="rudr_instafeed">
+{% endblock %}
