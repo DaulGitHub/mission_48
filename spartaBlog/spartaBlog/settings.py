@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blogApp',
-    'users'
+    'users',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -51,6 +51,10 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+FACEBOOK_APP_ID = 1786410314939944
+FACEBOOK_REDIRECT_URL = 'http://127.0.0.1:8000/facebook_login'
+FACEBOOK_SECRET = '9552f13d9ce5dfb6e40839083d479d04'
 
 ROOT_URLCONF = 'spartaBlog.urls'
 

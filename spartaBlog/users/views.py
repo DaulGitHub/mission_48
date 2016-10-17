@@ -1,6 +1,11 @@
 # coding: utf-8
 import os
+import json
+import urllib
+import simplejson
+import urlparse
 from django.contrib.auth import login, logout
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import password_reset, password_reset_confirm, password_reset_done
@@ -10,8 +15,9 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
+from django.contrib.auth.models import User
 from .forms import UserCreateForm, ProfileAvatarForm
-from models import UserProfile
+from models import UserProfile, FacebookProfile
 from spartaBlog import settings
 
 
@@ -36,6 +42,14 @@ class LoginFormView(FormView):
 
     success_url = "/blog"
     template_name = "login.html"
+
+    def get(self, request, *args, **kwargs):
+        form = AuthenticationForm()
+
+        context = {'facebook_login_url': 'https://www.facebook.com/v2.8/dialog/oauth?client_id=%s&redirect_uri=%s' % (settings.FACEBOOK_APP_ID, settings.FACEBOOK_REDIRECT_URL),
+                   'form': form
+                   }
+        return render(request, template_name="login.html", context=context)
 
     def form_valid(self, form):
         # Получаем объект пользователя на основе введённых в форму данных.
@@ -117,3 +131,65 @@ class Profile(View):
         context = {"avatar_forms": load_avatar_form}
 
         return render(request, template_name='profile.html', context=context)
+
+
+class FacebookLoginView(View):
+
+    def get(self, request):
+        access_token = self.get_access_token()
+        facebook_data = self.get_facebook_data(access_token)
+        try:
+            profile = FacebookProfile.objects.get(facebook_id=facebook_data['id'])
+        except FacebookProfile.DoesNotExist:
+            user = self.create_user(facebook_data)
+        else:
+            user = profile.user
+
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        if user.is_active:
+            login(request, user)
+        # else:
+        #     messages.error(request, 'Ваша учетная запись заблокирована!')
+        return redirect('/blog/')
+
+    def get_access_token(self):
+        code = self.request.GET.get('code', '')
+        graph_url = u"https://graph.facebook.com/v2.8/oauth/access_token?" + urllib.urlencode({
+            'client_id': settings.FACEBOOK_APP_ID,
+            'redirect_uri': settings.FACEBOOK_REDIRECT_URL,
+            'client_secret': settings.FACEBOOK_SECRET,
+            'code': code
+        })
+
+        response = urllib.urlopen(graph_url)
+        content = response.read()
+        data = json.loads(content)
+        return data['access_token']
+
+    def get_facebook_data(self, access_token):
+        graph_url = "https://graph.facebook.com/v2.8/me?fields=email&" + urllib.urlencode({'access_token': access_token})
+        response = urllib.urlopen(graph_url)
+        content = response.read()
+        data = simplejson.loads(content)
+        return data
+
+    def create_user(self, facebook_data):
+        username = facebook_data['name']
+        password = User.objects.make_random_password()
+
+        user = User(
+            username=username,
+            email=facebook_data.get('email', None),
+            is_staff=False,
+            is_active=True,
+            is_superuser=False,
+        )
+        user.set_password(password)
+        user.save()
+
+        return user
+
+
+def facebook_privacy(request):
+    """Главная страница сайта"""
+    return render(request, template_name='facebook_privacy.html')
