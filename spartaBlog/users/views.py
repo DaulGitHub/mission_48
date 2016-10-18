@@ -3,7 +3,6 @@ import os
 import json
 import urllib
 import simplejson
-import urlparse
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -188,8 +187,3 @@ class FacebookLoginView(View):
         user.save()
 
         return user
-
-
-def facebook_privacy(request):
-    """Главная страница сайта"""
-    return render(request, template_name='facebook_privacy.html')

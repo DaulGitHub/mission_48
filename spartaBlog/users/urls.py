@@ -14,6 +14,4 @@ urlpatterns = [
     url(r'^profile/$', views.Profile.as_view()),
     url(r'^registration/$', views.RegisterFormView.as_view()),
     url(r'^facebook_login/$', views.FacebookLoginView.as_view()),
-    url(r'^privacy/$', views.facebook_privacy)
-
 ]
